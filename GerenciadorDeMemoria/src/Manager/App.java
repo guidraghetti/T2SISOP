@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 //lê o arquivo texto e cria os objetos com as solicitações;
 public class App {
+	LinkedListOfBlocos bloco = new LinkedListOfBlocos();
 	public static void main (String [] args) {
 		
 	}
@@ -22,16 +23,22 @@ public class App {
 		line = s.readLine();
 		modo = Integer.parseInt(line);
 		line = s.readLine();
-		tamanhoDoBloco = Integer.parseInt(line);
+		bloco.inicioBloco = Integer.parseInt(line);
 		line = s.readLine();
-		tamanhoDoBloco = (tamanhoDoBloco - Integer.parseInt(line)) * (-1); 
+		bloco.finalBloco = Integer.parseInt(line);
+		bloco.tamMemoria = (bloco.finalBloco - bloco.inicioBloco); 
 		line = s.readLine();
 		
 		int bloco = 1;
 		
 		while (line !=null) {
 			String [] linha = line.trim().split(" ");
-			
+			if (linha[0] == "S") {
+				
+			} else {
+				
+			}
+ 			
 		}
 	}
 }
