@@ -24,7 +24,7 @@ Implementar um programa que controla a alocação de memória utilizando "gerên
 Exemplo: 
 1     // modo fixo - para o modo aleatório este valor será 2 
 100   // mi 
-1250  // mf 
+1250  // mf s
 S 250 // bloco 1 
 S 100 // bloco 2 
 S 200 // bloco 3 
