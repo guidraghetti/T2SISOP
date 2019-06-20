@@ -4,7 +4,7 @@ package Manager;
 //Cria os nodos que estarão na LinkedList;
 public class Solicitacao {
 	
-	private int bloco;
+	private String bloco;
 	private int tamanhoAlocado;
 	private int inicioAlocacao;
 	private int finalAlocacao;
@@ -14,7 +14,7 @@ public class Solicitacao {
 		
 	}
 
-	public Solicitacao(int bloco, int tamanhoAlocado, int inicioAlocacao, int finalAlocacao, boolean liberado) {
+	public Solicitacao(String bloco, int tamanhoAlocado, int inicioAlocacao, int finalAlocacao, boolean liberado) {
 		super();
 		this.bloco = bloco;
 		this.tamanhoAlocado = tamanhoAlocado;
@@ -23,11 +23,11 @@ public class Solicitacao {
 		this.liberado = liberado;
 	}
 
-	public int getBloco() {
+	public String getBloco() {
 		return bloco;
 	}
 
-	public void setBloco(int bloco) {
+	public void setBloco(String bloco) {
 		this.bloco = bloco;
 	}
 
@@ -65,8 +65,8 @@ public class Solicitacao {
 
 	@Override
 	public String toString() {
-		return "Solicitacao [bloco=" + bloco + ", tamanhoAlocado=" + tamanhoAlocado + ", inicioAlocacao="
-				+ inicioAlocacao + ", finalAlocacao=" + finalAlocacao + ", liberado=" + liberado + "]";
+		return "[inicioAlocacao="
+				+ inicioAlocacao + ", finalAlocacao=" + finalAlocacao + "bloco=" + bloco +"(" + "tamanho " + tamanhoAlocado + ")" + "]";
 	}
 	
 	

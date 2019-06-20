@@ -1,0 +1,21 @@
+Lê o arquivo
+Verifica a letra
+	Se for S
+		metodo de adicionar no bloco
+			verifica se há algum partição livre no bloco
+				se houver verifica se o tamanho da partição é igual ao da solicitação
+					se for, adiciona a solicitação
+				ou verifica se o tamanho da partição é maior que o da solicitação
+					se for, dá split na partição pegando o tamanho necessário para alocar a solicitação
+					e cria uma nova partição com o restante do tamanho e empurra tudo pro lado
+			se nao tiver partição livre, adiciona no final verificando o tamanho do bloco.
+			se nao conseguir adicionar, coloca na lista de espera.
+	Se for L
+		metodo de liberar no bloco
+			encontra a partição no bloco para remover.
+			seta o booleano para true.
+			verifica se dá pra juntar com o bloco de cima ou de baixo.
+				se der, junta e empurra a lista para a esquerda.
+			verifica se há alguma solicitação na lista de espera que caiba na partição.
+
+Após ler todos, verifica se há fragmentação;
