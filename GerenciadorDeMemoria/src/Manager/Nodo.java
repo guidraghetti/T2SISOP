@@ -6,9 +6,14 @@ public class Nodo {
 	Solicitacao data;
 	Nodo prev;
 	Nodo next;
-	int count;
+	
 
 	Nodo(Solicitacao d) {
 		data = d;
+	}
+	
+	public Nodo getNodo(int count) {
+		
+		return Nodo;
 	}
 }

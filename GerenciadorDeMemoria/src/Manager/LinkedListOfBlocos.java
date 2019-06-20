@@ -25,11 +25,16 @@ public class LinkedListOfBlocos {
 	}
 	
 	public boolean verificaFragmentacao() {
+		
 		return true;
 	}
 	
 	public void adicionaNaMemoria() {
 		
+	}
+	
+	public void juntaBloco() {
+		s
 	}
 
 }
