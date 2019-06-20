@@ -117,20 +117,22 @@ public class App {
 
 	// junta dois partição e empurra a linked list para a esquerda, i = i + 1;
 	public static void juntaBloco(int bloco) {
-			if (lsSolicitacao.get(bloco - 1).isLiberado()) {
-				lsSolicitacao.get(bloco - 1).setTamanhoAlocado(lsSolicitacao.get(bloco).getTamanhoAlocado()+lsSolicitacao.get(bloco-1).getTamanhoAlocado());
-				lsSolicitacao.get(bloco - 1).setFinalAlocacao(lsSolicitacao.get(bloco).getFinalAlocacao());
-				for (int i = bloco; i< lsSolicitacao.size(); i++) {
-					lsSolicitacao.set(i, lsSolicitacao.get(i+1));
-				}
-			} else if (lsSolicitacao.get(bloco + 1).isLiberado()) {
-					lsSolicitacao.get(bloco).setTamanhoAlocado(lsSolicitacao.get(bloco + 1).getTamanhoAlocado()+ lsSolicitacao.get(bloco).getTamanhoAlocado());
-					lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
-					for (int i = bloco+1; i< lsSolicitacao.size(); i++) {
-						lsSolicitacao.set(i, lsSolicitacao.get(i+1));
-					}
+		if (lsSolicitacao.get(bloco - 1).isLiberado()) {
+			lsSolicitacao.get(bloco - 1).setTamanhoAlocado(
+					lsSolicitacao.get(bloco).getTamanhoAlocado() + lsSolicitacao.get(bloco - 1).getTamanhoAlocado());
+			lsSolicitacao.get(bloco - 1).setFinalAlocacao(lsSolicitacao.get(bloco).getFinalAlocacao());
+			for (int i = bloco; i < lsSolicitacao.size(); i++) {
+				lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
 			}
-		
+		} else if (lsSolicitacao.get(bloco + 1).isLiberado()) {
+			lsSolicitacao.get(bloco).setTamanhoAlocado(
+					lsSolicitacao.get(bloco + 1).getTamanhoAlocado() + lsSolicitacao.get(bloco).getTamanhoAlocado());
+			lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
+			for (int i = bloco + 1; i < lsSolicitacao.size(); i++) {
+				lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
+			}
+		}
+
 	}
 
 	// divide uma partição em dois e empurra para a direita, i+1 = i
