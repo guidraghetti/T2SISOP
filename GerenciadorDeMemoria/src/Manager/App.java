@@ -155,7 +155,8 @@ public class App {
 			lsSolicitacao.removeLast();
 			// verifica se a bloco abaixo está livre para juntar
 		} 
-		else if (lsSolicitacao.get(bloco + 1).isLiberado() && ((bloco + 1) < lsSolicitacao.size())) {
+		//TÁ DANDO ERRO AQUI. ELE CAI DENTRO DO IF, MAS NÃO ERA PRA CAIR;
+		else if (lsSolicitacao.get(bloco + 1).isLiberado() && (bloco + 1 <= lsSolicitacao.size())) {
 			lsSolicitacao.get(bloco).setTamanhoAlocado(
 					lsSolicitacao.get(bloco + 1).getTamanhoAlocado() + lsSolicitacao.get(bloco).getTamanhoAlocado());
 			lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
