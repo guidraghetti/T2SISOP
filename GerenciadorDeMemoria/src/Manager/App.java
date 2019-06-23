@@ -46,7 +46,7 @@ public class App {
 			// verifica qual a letra para chamar o método correto.
 			if (linha[0].equals("S")) {
 				criaSolicitacao(linha);
-				lsSolicitacao.get(0);
+
 			} else if (linha[0].equals("L")) {
 				liberaBloco(linha);
 
@@ -56,6 +56,9 @@ public class App {
 
 			line = s.readLine();
 		}
+		// depois de ler todas as solicitações, verifica a diferença entre o último
+		// bloco da lista e número final passado pelo txt, e cria um bloco livre com o
+		// tamanho do final total - o final da alocação do ultimo elemento da lista;
 		if (lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao() < finalBloco) {
 			Solicitacao completaBloco = new Solicitacao();
 			completaBloco.setBloco("livre");
@@ -80,12 +83,12 @@ public class App {
 		bloco++;
 		inicioAlocacaoBloco = solic.getFinalAlocacao();
 		adicionaNaLista(solic);
-		
-		
+
 	}
 
 	public static void adicionaNaLista(Solicitacao solic) {
-		// váriavel para ver o método ja adicionou na lista, evitando de adicionar mais de uma vez.
+		// váriavel para ver o método ja adicionou na lista, evitando de adicionar mais
+		// de uma vez.
 		boolean jaAdicionou = false;
 		// para adicionar na lista devemos procurar na linked list se há alguma posição
 		// dispinível que a solicitação possa ser alocada.
@@ -96,12 +99,13 @@ public class App {
 				// verifica se há alguma partição liberada, verificando se o tamanho da
 				// solicitação é igual ao tamanho da partição.
 				if (aux.isLiberado() && aux.getTamanhoAlocado() == solic.getTamanhoAlocado()) {
-					//substitui o bloco livre pelo objeto da solicitação e seta o inicio e final com os mesmo números que já estavam.
+					// substitui o bloco livre pelo objeto da solicitação e seta o inicio e final
+					// com os mesmo números que já estavam.
 					lsSolicitacao.set(i, solic);
 					lsSolicitacao.get(i).setInicioAlocacao(aux.getInicioAlocacao());
 					lsSolicitacao.get(i).setFinalAlocacao(aux.getFinalAlocacao());
-					lsSolicitacao.get(i).setBloco("" + (posicao+1));
-					inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size()-1).getFinalAlocacao();
+					lsSolicitacao.get(i).setBloco("" + (posicao + 1));
+					inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao();
 					jaAdicionou = true;
 					break;
 				}
@@ -118,12 +122,13 @@ public class App {
 				}
 
 			}
-			//se ainda não foi adicionado, adiciona no final da lista;
+			// se ainda não foi adicionado, adiciona no final da lista;
 			if (jaAdicionou == false)
 				lsSolicitacao.add(solic);
-			
-		} 
-		// se não conseguir adicionar no final da lista, bota em uma lista de espera para quando um bloco liberar verificar se pode encaixar lá;
+
+		}
+		// se não conseguir adicionar no final da lista, bota em uma lista de espera
+		// para quando um bloco liberar verificar se pode encaixar lá;
 		else {
 			lsSolicEspera.add(solic);
 		}
@@ -167,24 +172,25 @@ public class App {
 		try {
 			// junta os dois blocos, setando o inicio do anterior no proximo e a soma dos
 			// tamanhos alocados.
-			if (lsSolicitacao.get(bloco-1).isLiberado() && (bloco-1) >= 0) {
+			if (lsSolicitacao.get(bloco - 1).isLiberado() && (bloco - 1) >= 0) {
 				lsSolicitacao.get(bloco).setTamanhoAlocado(lsSolicitacao.get(bloco).getTamanhoAlocado()
-						+ lsSolicitacao.get(bloco-1).getTamanhoAlocado());
-				lsSolicitacao.get(bloco).setInicioAlocacao(lsSolicitacao.get(bloco-1).getInicioAlocacao());
+						+ lsSolicitacao.get(bloco - 1).getTamanhoAlocado());
+				lsSolicitacao.get(bloco).setInicioAlocacao(lsSolicitacao.get(bloco - 1).getInicioAlocacao());
 				// remove o bloco inutilizado
-				lsSolicitacao.remove(bloco-1);
+				lsSolicitacao.remove(bloco - 1);
 			} else {
-				if (lsSolicitacao.get(bloco+1) != null && lsSolicitacao.get(bloco+1).isLiberado()
-						&& (bloco+1 <= lsSolicitacao.size()-1)) {
+				if (lsSolicitacao.get(bloco + 1) != null && lsSolicitacao.get(bloco + 1).isLiberado()
+						&& (bloco + 1 <= lsSolicitacao.size() - 1)) {
 
-					lsSolicitacao.get(bloco).setTamanhoAlocado(lsSolicitacao.get(bloco+1).getTamanhoAlocado()
+					lsSolicitacao.get(bloco).setTamanhoAlocado(lsSolicitacao.get(bloco + 1).getTamanhoAlocado()
 							+ lsSolicitacao.get(bloco).getTamanhoAlocado());
-					lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco+1).getFinalAlocacao());
+					lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
 					lsSolicitacao.remove(bloco + 1);
 				}
 			}
-		} 
-		// trata o erro para que o programa continue rodando, quando o dá a exceção é porque o programa não necessita deste método.
+		}
+		// trata o erro para que o programa continue rodando, quando o dá a exceção é
+		// porque o programa não necessita deste método.
 		catch (IndexOutOfBoundsException e) {
 
 		}
@@ -216,9 +222,10 @@ public class App {
 			// adicionamos esse bloco vazio na posição que não foi modificada.
 			lsSolicitacao.set(posicao + 1, restoDoBloco);
 		}
-		// seta o inicio da alocacao do proximo bloco para o final do último bloco da lista;
-			inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size()-1).getFinalAlocacao();
-		
+		// seta o inicio da alocacao do proximo bloco para o final do último bloco da
+		// lista;
+		inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao();
+
 	}
 
 	// após o termino da leitura do arquivo verifica fragmentação;
