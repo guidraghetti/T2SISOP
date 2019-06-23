@@ -43,7 +43,6 @@ public class App {
 		while (line != null) {
 
 			String[] linha = line.trim().split(" ");
-			System.out.println(linha[0] + "debug");
 			// verifica qual a letra para chamar o método correto.
 			if (linha[0].equals("S")) {
 				criaSolicitacao(linha);
@@ -103,9 +102,17 @@ public class App {
 			}
 		}
 		// adiciona no final do bloco verificando se há espaço suficiente.
-		if (inicioAlocacaoBloco + solic.getTamanhoAlocado() < finalBloco) {
+		if (inicioAlocacaoBloco <= finalBloco) {
 			lsSolicitacao.add(solic);
 		} else {
+			//não tem mais espaço no bloco, restante da menoria é adicionada no bloco final como livre
+			Solicitacao solFinal = new Solicitacao();
+			solFinal.setTamanhoAlocado(finalBloco - lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao());
+			solFinal.setFinalAlocacao(finalBloco);
+			solFinal.setLiberado(true);
+			solFinal.setInicioAlocacao(lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao());
+			solFinal.setBloco("Livre");
+			lsSolicitacao.add(solFinal);
 			lsSolicEspera.add(solic);
 
 		}
@@ -156,7 +163,8 @@ public class App {
 			// verifica se a bloco abaixo está livre para juntar
 		} 
 		//TÁ DANDO ERRO AQUI. ELE CAI DENTRO DO IF, MAS NÃO ERA PRA CAIR;
-		else if (lsSolicitacao.get(bloco + 1).isLiberado() && (bloco + 1 <= lsSolicitacao.size())) {
+		else if (lsSolicitacao.get(bloco + 1) != null && lsSolicitacao.get(bloco + 1).isLiberado() && (bloco + 1 <= lsSolicitacao.size())) {
+
 			lsSolicitacao.get(bloco).setTamanhoAlocado(
 					lsSolicitacao.get(bloco + 1).getTamanhoAlocado() + lsSolicitacao.get(bloco).getTamanhoAlocado());
 			lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
@@ -192,18 +200,21 @@ public class App {
 
 	// após o termino da leitura do arquivo verifica fragmentação;
 	public static void verificaFragmentacao() {
+		String resultado = "";
 		int memoriaLivre = 0;
 			for (int i = 0; i < lsSolicitacao.size(); i++) {
+				System.out.println(lsSolicitacao.get(i).toString());
 				if (lsSolicitacao.get(i).isLiberado()) {
 					memoriaLivre += lsSolicitacao.get(i).getTamanhoAlocado();
 				}
 				for (int j = 0; j< lsSolicEspera.size(); j++) {
 					if (lsSolicEspera.get(j).getTamanhoAlocado() <= memoriaLivre) {
-						System.out.println(memoriaLivre + "livres, " + lsSolicEspera.get(j).getTamanhoAlocado() + "solicitados - Fragmentação Externa");
+						resultado = memoriaLivre + "livres, " + lsSolicEspera.get(j).getTamanhoAlocado() + " solicitados - Fragmentação Externa";
 						break;
 					}
 				}
 			}
+			System.out.println(resultado);
 	}
 
 }

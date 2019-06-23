@@ -1,7 +1,7 @@
 package Manager;
 
-//recebe os dados das solicitações, como tamanho da alocação ou liberação e qual bloco;
-//Cria os nodos que estarão na LinkedList;
+//recebe os dados das solicitaï¿½ï¿½es, como tamanho da alocaï¿½ï¿½o ou liberaï¿½ï¿½o e qual bloco;
+//Cria os nodos que estarï¿½o na LinkedList;
 public class Solicitacao {
 	
 	private String bloco;
@@ -66,7 +66,7 @@ public class Solicitacao {
 	@Override
 	public String toString() {
 		return "[inicioAlocacao="
-				+ inicioAlocacao + ", finalAlocacao=" + finalAlocacao + "bloco=" + bloco +"(" + "tamanho " + tamanhoAlocado + ")" + "]";
+				+ inicioAlocacao + ", finalAlocacao=" + finalAlocacao + " bloco=" + bloco +"(" + "tamanho " + tamanhoAlocado + ")" + "]";
 	}
 	
 	
