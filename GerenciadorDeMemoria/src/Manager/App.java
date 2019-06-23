@@ -16,7 +16,7 @@ public class App {
 	public static int tamMemoria;
 	public static int inicioAlocacaoBloco;
 	public static int bloco = 1;
-	public static LinkedList<Solicitacao> lsSolicitacao = new LinkedList();
+	public static ArrayList<Solicitacao> lsSolicitacao = new ArrayList();
 	public static ArrayList<Solicitacao> lsSolicEspera = new ArrayList();
 
 	// inicializa o programa
@@ -46,8 +46,7 @@ public class App {
 			// verifica qual a letra para chamar o método correto.
 			if (linha[0].equals("S")) {
 				criaSolicitacao(linha);
-				
-
+				lsSolicitacao.get(0);
 			} else if (linha[0].equals("L")) {
 				liberaBloco(linha);
 
@@ -55,9 +54,18 @@ public class App {
 				System.out.print("Letra não corresponde a nenhum método! ");
 			}
 
-		line = s.readLine();
+			line = s.readLine();
 		}
-		
+		if (lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao() < finalBloco) {
+			Solicitacao completaBloco = new Solicitacao();
+			completaBloco.setBloco("livre");
+			completaBloco.setLiberado(true);
+			completaBloco.setFinalAlocacao(finalBloco);
+			completaBloco.setInicioAlocacao(lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao());
+			completaBloco.setTamanhoAlocado(finalBloco - completaBloco.getInicioAlocacao());
+			lsSolicitacao.add(completaBloco);
+		}
+
 		s.close();
 		verificaFragmentacao();
 	}
@@ -72,49 +80,52 @@ public class App {
 		bloco++;
 		inicioAlocacaoBloco = solic.getFinalAlocacao();
 		adicionaNaLista(solic);
+		
+		
 	}
 
 	public static void adicionaNaLista(Solicitacao solic) {
+		// váriavel para ver o método ja adicionou na lista, evitando de adicionar mais de uma vez.
+		boolean jaAdicionou = false;
 		// para adicionar na lista devemos procurar na linked list se há alguma posição
 		// dispinível que a solicitação possa ser alocada.
-		for (int i = 0; i < lsSolicitacao.size(); i++) {
-			Solicitacao aux = lsSolicitacao.get(i);
-			// verifica se há alguma partição liberada, verificando se o tamanho da
-			// solicitação é igual ao tamanho da partição.
-			if (aux.isLiberado() && aux.getTamanhoAlocado() == solic.getTamanhoAlocado()) {
-				lsSolicitacao.set(i, solic);
-				int difTamanhoAlocado = aux.getTamanhoAlocado() - solic.getTamanhoAlocado();
-				if (lsSolicitacao.get(i + 1).isLiberado()) {
-					lsSolicitacao.get(i + 1)
-							.setInicioAlocacao(lsSolicitacao.get(i + 1).getInicioAlocacao() - difTamanhoAlocado);
-					lsSolicitacao.get(i + 1)
-							.setTamanhoAlocado(lsSolicitacao.get(i + 1).getTamanhoAlocado() + difTamanhoAlocado);
-				}
-				inicioAlocacaoBloco = solic.getFinalAlocacao();
-
-			}
-			// verifica se há alguma partição liberada, verificando se o tamanho da
-			// solicitação é menor que o tamanho da partição;
-			else if (aux.isLiberado() && aux.getTamanhoAlocado() > solic.getTamanhoAlocado()) {
+		if (solic.getFinalAlocacao() <= finalBloco && !lsSolicitacao.contains(solic)) {
+			for (int i = 0; i < lsSolicitacao.size(); i++) {
+				Solicitacao aux = lsSolicitacao.get(i);
 				int posicao = lsSolicitacao.indexOf(aux);
-				splitBloco(posicao, solic);
-				inicioAlocacaoBloco = solic.getFinalAlocacao();
-			}
-		}
-		// adiciona no final do bloco verificando se há espaço suficiente.
-		if (inicioAlocacaoBloco <= finalBloco) {
-			lsSolicitacao.add(solic);
-		} else {
-			//não tem mais espaço no bloco, restante da menoria é adicionada no bloco final como livre
-			Solicitacao solFinal = new Solicitacao();
-			solFinal.setTamanhoAlocado(finalBloco - lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao());
-			solFinal.setFinalAlocacao(finalBloco);
-			solFinal.setLiberado(true);
-			solFinal.setInicioAlocacao(lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao());
-			solFinal.setBloco("Livre");
-			lsSolicitacao.add(solFinal);
-			lsSolicEspera.add(solic);
+				// verifica se há alguma partição liberada, verificando se o tamanho da
+				// solicitação é igual ao tamanho da partição.
+				if (aux.isLiberado() && aux.getTamanhoAlocado() == solic.getTamanhoAlocado()) {
+					//substitui o bloco livre pelo objeto da solicitação e seta o inicio e final com os mesmo números que já estavam.
+					lsSolicitacao.set(i, solic);
+					lsSolicitacao.get(i).setInicioAlocacao(aux.getInicioAlocacao());
+					lsSolicitacao.get(i).setFinalAlocacao(aux.getFinalAlocacao());
+					lsSolicitacao.get(i).setBloco("" + (posicao+1));
+					inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size()-1).getFinalAlocacao();
+					jaAdicionou = true;
+					break;
+				}
+				// verifica se há alguma partição liberada, verificando se o tamanho da
+				// solicitação é menor que o tamanho da partição;
+				else if (aux.isLiberado() && aux.getTamanhoAlocado() > solic.getTamanhoAlocado()) {
+					solic.setBloco("" + (posicao + 1));
+					solic.setInicioAlocacao(aux.getInicioAlocacao());
+					solic.setFinalAlocacao(solic.getInicioAlocacao() + solic.getTamanhoAlocado());
+					jaAdicionou = true;
+					splitBloco(posicao, solic);
 
+					break;
+				}
+
+			}
+			//se ainda não foi adicionado, adiciona no final da lista;
+			if (jaAdicionou == false)
+				lsSolicitacao.add(solic);
+			
+		} 
+		// se não conseguir adicionar no final da lista, bota em uma lista de espera para quando um bloco liberar verificar se pode encaixar lá;
+		else {
+			lsSolicEspera.add(solic);
 		}
 
 	}
@@ -122,7 +133,7 @@ public class App {
 	// libera uma partição setando o booleando para poder reescrever e também
 	// verifica se da para juntar duas partições.
 	public static void liberaBloco(String[] linha) {
-		int getBloco = Integer.parseInt(linha[1]) -1;
+		int getBloco = Integer.parseInt(linha[1]) - 1;
 		lsSolicitacao.get(getBloco).setLiberado(true);
 		lsSolicitacao.get(getBloco).setBloco("livre");
 
@@ -132,65 +143,50 @@ public class App {
 
 	public static void verificaListaEspera(int getBloco) {
 		int g = 0;
-		// verifica na lista de Espera se há alguma solicitação que se encaixe na posição liberada;
+		// verifica na lista de Espera se há alguma solicitação que se encaixe na
+		// posição liberada;
 		while (g < lsSolicEspera.size()) {
-			if (lsSolicEspera.get(g).getTamanhoAlocado()< lsSolicitacao.get(getBloco).getTamanhoAlocado()) {
+			if (lsSolicEspera.get(g).getTamanhoAlocado() < lsSolicitacao.get(getBloco).getTamanhoAlocado()) {
 				lsSolicitacao.set(g, lsSolicEspera.get(g));
 				splitBloco(getBloco, lsSolicEspera.get(g));
 				break;
 			} else if (lsSolicEspera.get(g).getTamanhoAlocado() == lsSolicitacao.get(getBloco).getTamanhoAlocado()) {
 				lsSolicitacao.set(g, lsSolicEspera.get(g));
+				lsSolicitacao.get(g).setBloco("" + g + 1);
 				break;
 			}
 			g++;
 		}
-		
-		
+
 	}
 
 	// junta dois blocos e empurra a linked list para a esquerda, i = i + 1;
 	public static void juntaBloco(int bloco) {
 
 		// verifica se bloco acima está livre para juntar;
-		if (lsSolicitacao.get(bloco - 1).isLiberado() && (bloco -1) >= 0) {
-			lsSolicitacao.get(bloco - 1).setTamanhoAlocado(
-					lsSolicitacao.get(bloco).getTamanhoAlocado() + lsSolicitacao.get(bloco - 1).getTamanhoAlocado());
-			lsSolicitacao.get(bloco - 1).setFinalAlocacao(lsSolicitacao.get(bloco).getFinalAlocacao());
-			for (int i = bloco; i < lsSolicitacao.size(); i++) {
-				if(i < lsSolicitacao.size() - 1) {
-					lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
-				}
-			}
-			// remove o ultimo elemento da lista, pois estará duplicado;
-			lsSolicitacao.removeLast();
-			// verifica se a bloco abaixo está livre para juntar
-			//dúvida oolhar o baixo aqui oou não?????????????????????????
-//			if(lsSolicitacao.get(bloco).isLiberado()){
-//				lsSolicitacao.get(bloco - 1).setTamanhoAlocado(
-//						lsSolicitacao.get(bloco).getTamanhoAlocado() + lsSolicitacao.get(bloco - 1).getTamanhoAlocado());
-//				lsSolicitacao.get(bloco - 1).setFinalAlocacao(lsSolicitacao.get(bloco).getFinalAlocacao());
-//				for (int i = bloco; i < lsSolicitacao.size(); i++) {
-//					if(i < lsSolicitacao.size() - 1) {
-//						lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
-//					}
-//				}
-//				// remove o ultimo elemento da lista, pois estará duplicado;
-//				lsSolicitacao.removeLast();
-//			}
-		} 
-		//TÁ DANDO ERRO AQUI. ELE CAI DENTRO DO IF, MAS NÃO ERA PRA CAIR;
-		else if (lsSolicitacao.get(bloco + 1) != null && lsSolicitacao.get(bloco + 1).isLiberado() && (bloco + 1 <= lsSolicitacao.size())) {
+		try {
+			// junta os dois blocos, setando o inicio do anterior no proximo e a soma dos
+			// tamanhos alocados.
+			if (lsSolicitacao.get(bloco-1).isLiberado() && (bloco-1) >= 0) {
+				lsSolicitacao.get(bloco).setTamanhoAlocado(lsSolicitacao.get(bloco).getTamanhoAlocado()
+						+ lsSolicitacao.get(bloco-1).getTamanhoAlocado());
+				lsSolicitacao.get(bloco).setInicioAlocacao(lsSolicitacao.get(bloco-1).getInicioAlocacao());
+				// remove o bloco inutilizado
+				lsSolicitacao.remove(bloco-1);
+			} else {
+				if (lsSolicitacao.get(bloco+1) != null && lsSolicitacao.get(bloco+1).isLiberado()
+						&& (bloco+1 <= lsSolicitacao.size()-1)) {
 
-			lsSolicitacao.get(bloco).setTamanhoAlocado(
-					lsSolicitacao.get(bloco + 1).getTamanhoAlocado() + lsSolicitacao.get(bloco).getTamanhoAlocado());
-			lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
-			for (int i = bloco + 1; i < lsSolicitacao.size(); i++) {
-				if(i < lsSolicitacao.size() - 1) {
-					lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
+					lsSolicitacao.get(bloco).setTamanhoAlocado(lsSolicitacao.get(bloco+1).getTamanhoAlocado()
+							+ lsSolicitacao.get(bloco).getTamanhoAlocado());
+					lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco+1).getFinalAlocacao());
+					lsSolicitacao.remove(bloco + 1);
 				}
 			}
-			// remove o ultimo elemento da lista, pois estará duplicado;
-			lsSolicitacao.removeLast();
+		} 
+		// trata o erro para que o programa continue rodando, quando o dá a exceção é porque o programa não necessita deste método.
+		catch (IndexOutOfBoundsException e) {
+
 		}
 
 	}
@@ -198,41 +194,51 @@ public class App {
 	// divide um bloco em dois e empurra para a direita, i+1 = i; Por padrão o bloco
 	// livre ficará depois do bloco ocupado.
 	public static void splitBloco(int posicao, Solicitacao solic) {
-		//cria um bloco vazio com o resto do tamanho da alocação;
-		Solicitacao restoDoBloco = new Solicitacao(); 
+		// cria um bloco vazio com o resto do tamanho da alocação;
+		Solicitacao restoDoBloco = new Solicitacao();
 		restoDoBloco.setTamanhoAlocado(lsSolicitacao.get(posicao).getTamanhoAlocado() - solic.getTamanhoAlocado());
 		restoDoBloco.setInicioAlocacao(solic.getFinalAlocacao());
 		restoDoBloco.setFinalAlocacao(solic.getFinalAlocacao() + restoDoBloco.getTamanhoAlocado());
+		restoDoBloco.setBloco("livre");
 		restoDoBloco.setLiberado(true);
-		//coloca a solicitação na posição;
+		// coloca a solicitação na posição;
 		lsSolicitacao.set(posicao, solic);
-		//adiciona a solicitação no final do bloco
+		// adiciona a solicitação no final do bloco
 		lsSolicitacao.add(restoDoBloco);
 		// empurra a lista para a direita, no qual a posição i + 1 = i;
-		for (int i= posicao+2; i< lsSolicitacao.size(); i++) {
-			lsSolicitacao.set(i, lsSolicitacao.get(i-1));
+		if ((posicao + 2) < (lsSolicitacao.size())) {
+			for (int i = lsSolicitacao.size() - 1; i >= posicao + 2; i--) {
+
+				lsSolicitacao.set(i, lsSolicitacao.get(i - 1));
+				lsSolicitacao.get(i).setBloco("" + (i + 1));
+			}
+			// (posição +1) ficará igual, pois a iteraçã só começa em (posição +2), assim
+			// adicionamos esse bloco vazio na posição que não foi modificada.
+			lsSolicitacao.set(posicao + 1, restoDoBloco);
 		}
-		// (posição +1) ficará igual, pois a iteraçã só começa em (posição +2), assim adicionamos esse bloco vazio na posição que não foi modificada.
-		lsSolicitacao.set(posicao+1, restoDoBloco);
+		// seta o inicio da alocacao do proximo bloco para o final do último bloco da lista;
+			inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size()-1).getFinalAlocacao();
+		
 	}
 
 	// após o termino da leitura do arquivo verifica fragmentação;
 	public static void verificaFragmentacao() {
 		String resultado = "";
 		int memoriaLivre = 0;
-			for (int i = 0; i < lsSolicitacao.size(); i++) {
-				System.out.println(lsSolicitacao.get(i).toString());
-				if (lsSolicitacao.get(i).isLiberado()) {
-					memoriaLivre += lsSolicitacao.get(i).getTamanhoAlocado();
-				}
-				for (int j = 0; j< lsSolicEspera.size(); j++) {
-					if (lsSolicEspera.get(j).getTamanhoAlocado() <= memoriaLivre) {
-						resultado = memoriaLivre + "livres, " + lsSolicEspera.get(j).getTamanhoAlocado() + " solicitados - Fragmentação Externa";
-						break;
-					}
+		for (int i = 0; i < lsSolicitacao.size(); i++) {
+			System.out.println(lsSolicitacao.get(i).toString());
+			if (lsSolicitacao.get(i).isLiberado()) {
+				memoriaLivre += lsSolicitacao.get(i).getTamanhoAlocado();
+			}
+			for (int j = 0; j < lsSolicEspera.size(); j++) {
+				if (lsSolicEspera.get(j).getTamanhoAlocado() <= memoriaLivre) {
+					resultado = memoriaLivre + "livres, " + lsSolicEspera.get(j).getTamanhoAlocado()
+							+ " solicitados - Fragmentação Externa";
+					break;
 				}
 			}
-			System.out.println(resultado);
+		}
+		System.out.println(resultado);
 	}
 
 }
