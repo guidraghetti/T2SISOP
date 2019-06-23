@@ -142,6 +142,7 @@ public class App {
 				lsSolicitacao.set(g, lsSolicEspera.get(g));
 				break;
 			}
+			g++;
 		}
 		
 		
@@ -156,11 +157,26 @@ public class App {
 					lsSolicitacao.get(bloco).getTamanhoAlocado() + lsSolicitacao.get(bloco - 1).getTamanhoAlocado());
 			lsSolicitacao.get(bloco - 1).setFinalAlocacao(lsSolicitacao.get(bloco).getFinalAlocacao());
 			for (int i = bloco; i < lsSolicitacao.size(); i++) {
-				lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
+				if(i < lsSolicitacao.size() - 1) {
+					lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
+				}
 			}
 			// remove o ultimo elemento da lista, pois estará duplicado;
 			lsSolicitacao.removeLast();
 			// verifica se a bloco abaixo está livre para juntar
+			//dúvida oolhar o baixo aqui oou não?????????????????????????
+//			if(lsSolicitacao.get(bloco).isLiberado()){
+//				lsSolicitacao.get(bloco - 1).setTamanhoAlocado(
+//						lsSolicitacao.get(bloco).getTamanhoAlocado() + lsSolicitacao.get(bloco - 1).getTamanhoAlocado());
+//				lsSolicitacao.get(bloco - 1).setFinalAlocacao(lsSolicitacao.get(bloco).getFinalAlocacao());
+//				for (int i = bloco; i < lsSolicitacao.size(); i++) {
+//					if(i < lsSolicitacao.size() - 1) {
+//						lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
+//					}
+//				}
+//				// remove o ultimo elemento da lista, pois estará duplicado;
+//				lsSolicitacao.removeLast();
+//			}
 		} 
 		//TÁ DANDO ERRO AQUI. ELE CAI DENTRO DO IF, MAS NÃO ERA PRA CAIR;
 		else if (lsSolicitacao.get(bloco + 1) != null && lsSolicitacao.get(bloco + 1).isLiberado() && (bloco + 1 <= lsSolicitacao.size())) {
@@ -169,7 +185,9 @@ public class App {
 					lsSolicitacao.get(bloco + 1).getTamanhoAlocado() + lsSolicitacao.get(bloco).getTamanhoAlocado());
 			lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
 			for (int i = bloco + 1; i < lsSolicitacao.size(); i++) {
-				lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
+				if(i < lsSolicitacao.size() - 1) {
+					lsSolicitacao.set(i, lsSolicitacao.get(i + 1));
+				}
 			}
 			// remove o ultimo elemento da lista, pois estará duplicado;
 			lsSolicitacao.removeLast();
