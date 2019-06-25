@@ -22,7 +22,7 @@ public class App {
 	// inicializa o programa
 	public static void main(String[] args) throws IOException {
 
-		FileReader lerArquivo = new FileReader("t2.txt");
+		FileReader lerArquivo = new FileReader("t1.txt");
 		BufferedReader s = new BufferedReader(lerArquivo);
 
 		String line;
@@ -67,12 +67,12 @@ public class App {
 			completaBloco.setInicioAlocacao(lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao());
 			completaBloco.setTamanhoAlocado(finalBloco - completaBloco.getInicioAlocacao());
 			lsSolicitacao.add(completaBloco);
-		System.out.println(completaBloco.toString()+ "\n");
+			System.out.println(completaBloco.toString() + "\n");
 		}
 		System.out.println("\n");
 		System.out.println("\n");
 		System.out.println("Estado do bloco após todas as leituras: ");
-		for (int i=0; i<lsSolicitacao.size();i++) {
+		for (int i = 0; i < lsSolicitacao.size(); i++) {
 			System.out.println(lsSolicitacao.get(i).toString());
 		}
 		s.close();
@@ -111,7 +111,7 @@ public class App {
 					lsSolicitacao.get(i).setFinalAlocacao(aux.getFinalAlocacao());
 					inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao();
 					jaAdicionou = true;
-					tamMemoria-= lsSolicitacao.get(i).getTamanhoAlocado();
+					tamMemoria -= lsSolicitacao.get(i).getTamanhoAlocado();
 					System.out.println(lsSolicitacao.get(i).toString() + "\n");
 					break;
 				}
@@ -120,7 +120,7 @@ public class App {
 				else if (aux.isLiberado() && aux.getTamanhoAlocado() > solic.getTamanhoAlocado()) {
 					solic.setInicioAlocacao(aux.getInicioAlocacao());
 					solic.setFinalAlocacao(solic.getInicioAlocacao() + solic.getTamanhoAlocado());
-					tamMemoria-=solic.getTamanhoAlocado();
+					tamMemoria -= solic.getTamanhoAlocado();
 					jaAdicionou = true;
 					splitBloco(posicao, solic);
 
@@ -131,18 +131,20 @@ public class App {
 			// se ainda não foi adicionado, adiciona no final da lista;
 			if (jaAdicionou == false)
 				lsSolicitacao.add(solic);
-			tamMemoria-= solic.getTamanhoAlocado();
-			System.out.println(solic.toString()+ "\n");
+			tamMemoria -= solic.getTamanhoAlocado();
+			System.out.println(solic.toString() + "\n");
 		}
 		// se não conseguir adicionar no final da lista, bota em uma lista de espera
 		// para quando um bloco liberar verificar se pode encaixar lá;
 		else {
 			if (solic.getTamanhoAlocado() <= tamMemoria) {
-				System.out.println(tamMemoria + " livres - " + solic.getTamanhoAlocado() + " solicitados - Fragmentação Externa\n");
+				System.out.println(tamMemoria + " livres - " + solic.getTamanhoAlocado()
+						+ " solicitados - Fragmentação Externa\n");
 			} else {
 				System.out.println("Não há memória disponível\n");
-			}lsSolicEspera.add(solic);
-		} 
+			}
+			lsSolicEspera.add(solic);
+		}
 
 	}
 
@@ -153,8 +155,8 @@ public class App {
 			if (lsSolicitacao.get(i).getBloco().contentEquals(linha[1])) {
 				lsSolicitacao.get(i).setBloco("livre");
 				lsSolicitacao.get(i).setLiberado(true);
-				tamMemoria+=lsSolicitacao.get(i).getTamanhoAlocado();
-				System.out.println(lsSolicitacao.get(i).toString()+ "\n");
+				tamMemoria += lsSolicitacao.get(i).getTamanhoAlocado();
+				System.out.println(lsSolicitacao.get(i).toString() + "\n");
 				juntaBloco(i);
 				break;
 			}
@@ -178,10 +180,10 @@ public class App {
 					lsSolicEspera.get(j).setInicioAlocacao(aux.getInicioAlocacao());
 					lsSolicEspera.get(j).setFinalAlocacao(
 							lsSolicEspera.get(j).getInicioAlocacao() + lsSolicEspera.get(j).getTamanhoAlocado());
-					tamMemoria-=lsSolicEspera.get(j).getTamanhoAlocado();
+					tamMemoria -= lsSolicEspera.get(j).getTamanhoAlocado();
 					splitBloco(i, lsSolicEspera.get(j));
 					lsSolicEspera.remove(j);
-				
+
 					break;
 					// se for do mesmo tamanho, adiciona na posição e seta e inicio e final
 					// corretamente.
@@ -190,8 +192,8 @@ public class App {
 					lsSolicitacao.set(i, lsSolicEspera.get(j));
 					lsSolicitacao.get(i).setInicioAlocacao(aux.getInicioAlocacao());
 					lsSolicitacao.get(i).setFinalAlocacao(aux.getFinalAlocacao());
-					tamMemoria-= lsSolicEspera.get(j).getTamanhoAlocado();
-					System.out.println(lsSolicitacao.get(i).toString()+ "\n");
+					tamMemoria -= lsSolicEspera.get(j).getTamanhoAlocado();
+					System.out.println(lsSolicitacao.get(i).toString() + "\n");
 					lsSolicEspera.remove(j);
 
 					break;
@@ -214,7 +216,10 @@ public class App {
 				lsSolicitacao.get(bloco).setInicioAlocacao(lsSolicitacao.get(bloco - 1).getInicioAlocacao());
 				// remove o bloco inutilizado
 				lsSolicitacao.remove(bloco - 1);
-				System.out.println(lsSolicitacao.get(bloco).toString()+ "\n");
+				System.out.println(lsSolicitacao.get(bloco).toString() + "\n");
+				if (lsSolicitacao.get(bloco-1).isLiberado()) {
+					juntaBloco(bloco-1);
+				}
 			} else {
 				if (lsSolicitacao.get(bloco + 1) != null && lsSolicitacao.get(bloco + 1).isLiberado()) {
 
@@ -222,9 +227,14 @@ public class App {
 							+ lsSolicitacao.get(bloco).getTamanhoAlocado());
 					lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
 					lsSolicitacao.remove(bloco + 1);
-					System.out.println(lsSolicitacao.get(bloco).toString()+ "\n");
+					System.out.println(lsSolicitacao.get(bloco).toString() + "\n");
+					if (lsSolicitacao.get(bloco+1).isLiberado()) {
+						juntaBloco(bloco+1);
+					}
 				}
-			} 
+
+			}
+
 		}
 		// trata o erro para que o programa continue rodando, quando o dá a exceção é
 		// porque o programa não necessita deste método.
@@ -248,8 +258,8 @@ public class App {
 		lsSolicitacao.set(posicao, solic);
 		// adiciona a solicitação no final do bloco
 		lsSolicitacao.add(restoDoBloco);
-		System.out.println(lsSolicitacao.get(posicao).toString()+ "\n");
-		System.out.println(restoDoBloco.toString()+ "\n");
+		System.out.println(lsSolicitacao.get(posicao).toString() + "\n");
+		System.out.println(restoDoBloco.toString() + "\n");
 		// empurra a lista para a direita, no qual a posição i + 1 = i;
 		if ((posicao + 2) < (lsSolicitacao.size())) {
 			for (int i = lsSolicitacao.size() - 1; i >= posicao + 2; i--) {
@@ -264,6 +274,5 @@ public class App {
 		inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao();
 
 	}
-	
 
 }
