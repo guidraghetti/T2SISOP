@@ -22,7 +22,7 @@ public class App {
 	// inicializa o programa
 	public static void main(String[] args) throws IOException {
 
-		FileReader lerArquivo = new FileReader("t1.txt");
+		FileReader lerArquivo = new FileReader("t2.txt");
 		BufferedReader s = new BufferedReader(lerArquivo);
 
 		String line;
@@ -67,10 +67,15 @@ public class App {
 			completaBloco.setInicioAlocacao(lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao());
 			completaBloco.setTamanhoAlocado(finalBloco - completaBloco.getInicioAlocacao());
 			lsSolicitacao.add(completaBloco);
+		System.out.println(completaBloco.toString()+ "\n");
 		}
-
+		System.out.println("\n");
+		System.out.println("\n");
+		System.out.println("Estado do bloco após todas as leituras: ");
+		for (int i=0; i<lsSolicitacao.size();i++) {
+			System.out.println(lsSolicitacao.get(i).toString());
+		}
 		s.close();
-		verificaFragmentacao();
 	}
 
 	public static void criaSolicitacao(String[] linha) {
@@ -104,17 +109,18 @@ public class App {
 					lsSolicitacao.set(i, solic);
 					lsSolicitacao.get(i).setInicioAlocacao(aux.getInicioAlocacao());
 					lsSolicitacao.get(i).setFinalAlocacao(aux.getFinalAlocacao());
-					lsSolicitacao.get(i).setBloco("" + (posicao + 1));
 					inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao();
 					jaAdicionou = true;
+					tamMemoria-= lsSolicitacao.get(i).getTamanhoAlocado();
+					System.out.println(lsSolicitacao.get(i).toString() + "\n");
 					break;
 				}
 				// verifica se há alguma partição liberada, verificando se o tamanho da
 				// solicitação é menor que o tamanho da partição;
 				else if (aux.isLiberado() && aux.getTamanhoAlocado() > solic.getTamanhoAlocado()) {
-					solic.setBloco("" + (posicao + 1));
 					solic.setInicioAlocacao(aux.getInicioAlocacao());
 					solic.setFinalAlocacao(solic.getInicioAlocacao() + solic.getTamanhoAlocado());
+					tamMemoria-=solic.getTamanhoAlocado();
 					jaAdicionou = true;
 					splitBloco(posicao, solic);
 
@@ -125,44 +131,74 @@ public class App {
 			// se ainda não foi adicionado, adiciona no final da lista;
 			if (jaAdicionou == false)
 				lsSolicitacao.add(solic);
-
+			tamMemoria-= solic.getTamanhoAlocado();
+			System.out.println(solic.toString()+ "\n");
 		}
 		// se não conseguir adicionar no final da lista, bota em uma lista de espera
 		// para quando um bloco liberar verificar se pode encaixar lá;
 		else {
-			lsSolicEspera.add(solic);
-		}
+			if (solic.getTamanhoAlocado() <= tamMemoria) {
+				System.out.println(tamMemoria + " livres - " + solic.getTamanhoAlocado() + " solicitados - Fragmentação Externa\n");
+			} else {
+				System.out.println("Não há memória disponível\n");
+			}lsSolicEspera.add(solic);
+		} 
 
 	}
 
 	// libera uma partição setando o booleando para poder reescrever e também
 	// verifica se da para juntar duas partições.
 	public static void liberaBloco(String[] linha) {
-		int getBloco = Integer.parseInt(linha[1]) - 1;
-		lsSolicitacao.get(getBloco).setLiberado(true);
-		lsSolicitacao.get(getBloco).setBloco("livre");
-
-		juntaBloco(getBloco);
-		verificaListaEspera(getBloco);
-	}
-
-	public static void verificaListaEspera(int getBloco) {
-		int g = 0;
-		// verifica na lista de Espera se há alguma solicitação que se encaixe na
-		// posição liberada;
-		while (g < lsSolicEspera.size()) {
-			if (lsSolicEspera.get(g).getTamanhoAlocado() < lsSolicitacao.get(getBloco).getTamanhoAlocado()) {
-				lsSolicitacao.set(g, lsSolicEspera.get(g));
-				splitBloco(getBloco, lsSolicEspera.get(g));
-				break;
-			} else if (lsSolicEspera.get(g).getTamanhoAlocado() == lsSolicitacao.get(getBloco).getTamanhoAlocado()) {
-				lsSolicitacao.set(g, lsSolicEspera.get(g));
-				lsSolicitacao.get(g).setBloco("" + g + 1);
+		for (int i = 0; i < lsSolicitacao.size(); i++) {
+			if (lsSolicitacao.get(i).getBloco().contentEquals(linha[1])) {
+				lsSolicitacao.get(i).setBloco("livre");
+				lsSolicitacao.get(i).setLiberado(true);
+				tamMemoria+=lsSolicitacao.get(i).getTamanhoAlocado();
+				System.out.println(lsSolicitacao.get(i).toString()+ "\n");
+				juntaBloco(i);
 				break;
 			}
-			g++;
 		}
+		verificaListaEspera();
+	}
 
+	public static void verificaListaEspera() {
+		Solicitacao aux = new Solicitacao();
+		// percorre a as partições em busca de uma partição livre/
+		for (int i = 0; i < lsSolicitacao.size(); i++) {
+			aux = lsSolicitacao.get(i);
+			for (int j = 0; j < lsSolicEspera.size(); j++) {
+				// se encontrar, verifica se algum elemento da lista de espera pode se encaixar
+				// nessa partição
+				// se puder se encaixar e for menor que a partição da lista principal, seta o
+				// objeto com o inicio e fim de alocação corretos, e chama split para divir em
+				// dois blocos
+				if (lsSolicitacao.get(i).isLiberado()
+						&& (lsSolicitacao.get(i).getTamanhoAlocado() > lsSolicEspera.get(j).getTamanhoAlocado())) {
+					lsSolicEspera.get(j).setInicioAlocacao(aux.getInicioAlocacao());
+					lsSolicEspera.get(j).setFinalAlocacao(
+							lsSolicEspera.get(j).getInicioAlocacao() + lsSolicEspera.get(j).getTamanhoAlocado());
+					tamMemoria-=lsSolicEspera.get(j).getTamanhoAlocado();
+					splitBloco(i, lsSolicEspera.get(j));
+					lsSolicEspera.remove(j);
+				
+					break;
+					// se for do mesmo tamanho, adiciona na posição e seta e inicio e final
+					// corretamente.
+				} else if (lsSolicitacao.get(i).isLiberado()
+						&& (lsSolicitacao.get(i).getTamanhoAlocado() == lsSolicEspera.get(j).getTamanhoAlocado())) {
+					lsSolicitacao.set(i, lsSolicEspera.get(j));
+					lsSolicitacao.get(i).setInicioAlocacao(aux.getInicioAlocacao());
+					lsSolicitacao.get(i).setFinalAlocacao(aux.getFinalAlocacao());
+					tamMemoria-= lsSolicEspera.get(j).getTamanhoAlocado();
+					System.out.println(lsSolicitacao.get(i).toString()+ "\n");
+					lsSolicEspera.remove(j);
+
+					break;
+
+				}
+			}
+		}
 	}
 
 	// junta dois blocos e empurra a linked list para a esquerda, i = i + 1;
@@ -178,16 +214,17 @@ public class App {
 				lsSolicitacao.get(bloco).setInicioAlocacao(lsSolicitacao.get(bloco - 1).getInicioAlocacao());
 				// remove o bloco inutilizado
 				lsSolicitacao.remove(bloco - 1);
+				System.out.println(lsSolicitacao.get(bloco).toString()+ "\n");
 			} else {
-				if (lsSolicitacao.get(bloco + 1) != null && lsSolicitacao.get(bloco + 1).isLiberado()
-						&& (bloco + 1 <= lsSolicitacao.size() - 1)) {
+				if (lsSolicitacao.get(bloco + 1) != null && lsSolicitacao.get(bloco + 1).isLiberado()) {
 
 					lsSolicitacao.get(bloco).setTamanhoAlocado(lsSolicitacao.get(bloco + 1).getTamanhoAlocado()
 							+ lsSolicitacao.get(bloco).getTamanhoAlocado());
 					lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
 					lsSolicitacao.remove(bloco + 1);
+					System.out.println(lsSolicitacao.get(bloco).toString()+ "\n");
 				}
-			}
+			} 
 		}
 		// trata o erro para que o programa continue rodando, quando o dá a exceção é
 		// porque o programa não necessita deste método.
@@ -211,12 +248,12 @@ public class App {
 		lsSolicitacao.set(posicao, solic);
 		// adiciona a solicitação no final do bloco
 		lsSolicitacao.add(restoDoBloco);
+		System.out.println(lsSolicitacao.get(posicao).toString()+ "\n");
+		System.out.println(restoDoBloco.toString()+ "\n");
 		// empurra a lista para a direita, no qual a posição i + 1 = i;
 		if ((posicao + 2) < (lsSolicitacao.size())) {
 			for (int i = lsSolicitacao.size() - 1; i >= posicao + 2; i--) {
-
 				lsSolicitacao.set(i, lsSolicitacao.get(i - 1));
-				lsSolicitacao.get(i).setBloco("" + (i + 1));
 			}
 			// (posição +1) ficará igual, pois a iteraçã só começa em (posição +2), assim
 			// adicionamos esse bloco vazio na posição que não foi modificada.
@@ -227,25 +264,6 @@ public class App {
 		inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao();
 
 	}
-
-	// após o termino da leitura do arquivo verifica fragmentação;
-	public static void verificaFragmentacao() {
-		String resultado = "";
-		int memoriaLivre = 0;
-		for (int i = 0; i < lsSolicitacao.size(); i++) {
-			System.out.println(lsSolicitacao.get(i).toString());
-			if (lsSolicitacao.get(i).isLiberado()) {
-				memoriaLivre += lsSolicitacao.get(i).getTamanhoAlocado();
-			}
-			for (int j = 0; j < lsSolicEspera.size(); j++) {
-				if (lsSolicEspera.get(j).getTamanhoAlocado() <= memoriaLivre) {
-					resultado = memoriaLivre + "livres, " + lsSolicEspera.get(j).getTamanhoAlocado()
-							+ " solicitados - Fragmentação Externa";
-					break;
-				}
-			}
-		}
-		System.out.println(resultado);
-	}
+	
 
 }
