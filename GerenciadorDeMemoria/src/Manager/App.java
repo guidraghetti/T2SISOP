@@ -8,9 +8,23 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-//lÍ o arquivo texto e cria os objetos com as solicitaÁıes;
+/*Guilherme Draghetti e Marcelo Azevedo
+	Data: 19 de junho de 2019;
+		Implementar um programa que controla a aloca√ß√£o de mem√≥ria utilizando "ger√™ncia de mem√≥ria por parti√ß√µes vari√°veis". 
+1. O gerente deve receber um bloco que representa a mem√≥ria dispon√≠vel do endere√ßo mi at√© o endere√ßo mf.‚ÄØ 
+2. A partir deste bloco, o gerente recebe solicita√ß√µes de aloca√ß√£o de mem√≥ria e solicita√ß√µes de libera√ß√£o de mem√≥ria. 
+3. A solicita√ß√£o de mem√≥ria deve retornar um identificador para a √°rea de mem√≥ria que foi alocada, enquanto o comando de libera√ß√£o de mem√≥ria envia o identificador recebido durante a aloca√ß√£o.‚ÄØ 
+4. O programa deve informar o momento que houver fragmenta√ß√£o externa no sistema. Neste momento deve mostrar como a mem√≥ria est√° organizada, ou seja, quais os blocos ocupados e quais os blocos livres. 
+5. O programa deve receber‚ÄØas solicita√ß√µes e libera√ß√µes via o arquivo de entrada de dados 
+6. N√£o √© preciso controlar tempo, as aloca√ß√µes e libera√ß√µes s√£o realizadas na ordem que chegarem e puderem ser atendidas. Se uma aloca√ß√£o n√£o puder ser atendida, deve ser verificado se ela pode ser atendida no momento que uma libera√ß√£o acontecer. 
+7. Deve haver alguma forma de acompanhar (visualizar) o que est√° acontecendo no programa a cada solicita√ß√£o ou libera√ß√£o. 
+
+
+*/
+
+//l√™ o arquivo texto e cria os objetos com as solicita√ß√µes;
 public class App {
-	// inicializa as vari·veis das partiÁıes
+	// inicializa as vari√°veis das parti√ß√µes
 	public static int inicioBloco;
 	public static int finalBloco;
 	public static int tamMemoria;
@@ -22,7 +36,7 @@ public class App {
 	// inicializa o programa
 	public static void main(String[] args) throws IOException {
 
-		FileReader lerArquivo = new FileReader("t1.txt");
+		FileReader lerArquivo = new FileReader("t3.txt");
 		BufferedReader s = new BufferedReader(lerArquivo);
 
 		String line;
@@ -30,8 +44,8 @@ public class App {
 		s.readLine();
 		line = s.readLine();
 
-		// lÍ as vari·veis para definir o inÌcio e o fim da memÛria para alocar as
-		// requisiÁıes.
+		// l√™ as vari√°veis para definir o in√≠cio e o fim da mem√≥ria para alocar as
+		// requisi√ß√µes.
 		inicioBloco = Integer.parseInt(line);
 		line = s.readLine();
 		finalBloco = Integer.parseInt(line);
@@ -39,11 +53,11 @@ public class App {
 		line = s.readLine();
 		inicioAlocacaoBloco = inicioBloco;
 
-		// lÍ a linha com a solicitaÁ„o.
+		// l√™ a linha com a solicita√ß√£o.
 		while (line != null) {
 
 			String[] linha = line.trim().split(" ");
-			// verifica qual a letra para chamar o mÈtodo correto.
+			// verifica qual a letra para chamar o m√©todo correto.
 			if (linha[0].equals("S")) {
 				criaSolicitacao(linha);
 
@@ -51,14 +65,14 @@ public class App {
 				liberaBloco(linha);
 
 			} else {
-				System.out.print("Letra n„o corresponde a nenhum mÈtodo! ");
+				System.out.print("Letra n√£o corresponde a nenhum m√©todo! ");
 			}
 
 			line = s.readLine();
 		}
-		// depois de ler todas as solicitaÁıes, verifica a diferenÁa entre o ˙ltimo
-		// bloco da lista e n˙mero final passado pelo txt, e cria um bloco livre com o
-		// tamanho do final total - o final da alocaÁ„o do ultimo elemento da lista;
+		// depois de ler todas as solicita√ß√µes, verifica a diferen√ßa entre o √∫ltimo
+		// bloco da lista e n√∫mero final passado pelo txt, e cria um bloco livre com o
+		// tamanho do final total - o final da aloca√ß√£o do ultimo elemento da lista;
 		if (lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao() < finalBloco) {
 			Solicitacao completaBloco = new Solicitacao();
 			completaBloco.setBloco("livre");
@@ -71,7 +85,7 @@ public class App {
 		}
 		System.out.println("\n");
 		System.out.println("\n");
-		System.out.println("Estado do bloco apÛs todas as leituras: ");
+		System.out.println("Estado do bloco ap√≥s todas as leituras: ");
 		for (int i = 0; i < lsSolicitacao.size(); i++) {
 			System.out.println(lsSolicitacao.get(i).toString());
 		}
@@ -79,7 +93,7 @@ public class App {
 	}
 
 	public static void criaSolicitacao(String[] linha) {
-		// cria a partiÁ„o inicializando as v·riaveis.
+		// cria a parti√ß√£o inicializando as v√°riaveis.
 		Solicitacao solic = new Solicitacao();
 		solic.setBloco("" + bloco);
 		solic.setInicioAlocacao(inicioAlocacaoBloco);
@@ -92,34 +106,36 @@ public class App {
 	}
 
 	public static void adicionaNaLista(Solicitacao solic) {
-		// v·riavel para ver o mÈtodo ja adicionou na lista, evitando de adicionar mais
+		// v√°riavel para ver o m√©todo ja adicionou na lista, evitando de adicionar mais
 		// de uma vez.
 		boolean jaAdicionou = false;
-		// para adicionar na lista devemos procurar na linked list se h· alguma posiÁ„o
-		// dispinÌvel que a solicitaÁ„o possa ser alocada.
+		// para adicionar na lista devemos procurar na linked list se h√° alguma posi√ß√£o
+		// dispin√≠vel que a solicita√ß√£o possa ser alocada.
 		if (solic.getFinalAlocacao() <= finalBloco && !lsSolicitacao.contains(solic)) {
 			for (int i = 0; i < lsSolicitacao.size(); i++) {
 				Solicitacao aux = lsSolicitacao.get(i);
 				int posicao = lsSolicitacao.indexOf(aux);
-				// verifica se h· alguma partiÁ„o liberada, verificando se o tamanho da
-				// solicitaÁ„o È igual ao tamanho da partiÁ„o.
+				// verifica se h√° alguma parti√ß√£o liberada, verificando se o tamanho da
+				// solicita√ß√£o √© igual ao tamanho da parti√ß√£o.
 				if (aux.isLiberado() && aux.getTamanhoAlocado() == solic.getTamanhoAlocado()) {
-					// substitui o bloco livre pelo objeto da solicitaÁ„o e seta o inicio e final
-					// com os mesmo n˙meros que j· estavam.
+					// substitui o bloco livre pelo objeto da solicita√ß√£o e seta o inicio e final
+					// com os mesmo n√∫meros que j√° estavam.
 					lsSolicitacao.set(i, solic);
 					lsSolicitacao.get(i).setInicioAlocacao(aux.getInicioAlocacao());
 					lsSolicitacao.get(i).setFinalAlocacao(aux.getFinalAlocacao());
 					inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao();
 					jaAdicionou = true;
+					// diminui a mem√≥ria dispon√≠vel
 					tamMemoria -= lsSolicitacao.get(i).getTamanhoAlocado();
 					System.out.println(lsSolicitacao.get(i).toString() + "\n");
 					break;
 				}
-				// verifica se h· alguma partiÁ„o liberada, verificando se o tamanho da
-				// solicitaÁ„o È menor que o tamanho da partiÁ„o;
+				// verifica se h√° alguma parti√ß√£o liberada, verificando se o tamanho da
+				// solicita√ß√£o √© menor que o tamanho da parti√ß√£o;
 				else if (aux.isLiberado() && aux.getTamanhoAlocado() > solic.getTamanhoAlocado()) {
 					solic.setInicioAlocacao(aux.getInicioAlocacao());
 					solic.setFinalAlocacao(solic.getInicioAlocacao() + solic.getTamanhoAlocado());
+					// diminui a memoria disponivel
 					tamMemoria -= solic.getTamanhoAlocado();
 					jaAdicionou = true;
 					splitBloco(posicao, solic);
@@ -128,28 +144,28 @@ public class App {
 				}
 
 			}
-			// se ainda n„o foi adicionado, adiciona no final da lista;
+			// se ainda n√£o foi adicionado, adiciona no final da lista;
 			if (jaAdicionou == false)
 				lsSolicitacao.add(solic);
 			tamMemoria -= solic.getTamanhoAlocado();
 			System.out.println(solic.toString() + "\n");
 		}
-		// se n„o conseguir adicionar no final da lista, bota em uma lista de espera
-		// para quando um bloco liberar verificar se pode encaixar l·;
+		// se n√£o conseguir adicionar no final da lista, bota em uma lista de espera
+		// para quando um bloco liberar verificar se pode encaixar l√°;
 		else {
 			if (solic.getTamanhoAlocado() <= tamMemoria) {
 				System.out.println(tamMemoria + " livres - " + solic.getTamanhoAlocado()
-						+ " solicitados - FragmentaÁ„o Externa\n");
+						+ " solicitados - Fragmenta√ß√£o Externa\n");
 			} else {
-				System.out.println("N„o h· memÛria disponÌvel\n");
+				System.out.println("N√£o h√° mem√≥ria dispon√≠vel\n");
 			}
 			lsSolicEspera.add(solic);
 		}
 
 	}
 
-	// libera uma partiÁ„o setando o booleando para poder reescrever e tambÈm
-	// verifica se da para juntar duas partiÁıes.
+	// libera uma parti√ß√£o setando o booleando para poder reescrever e tamb√©m
+	// verifica se da para juntar duas parti√ß√µes.
 	public static void liberaBloco(String[] linha) {
 		for (int i = 0; i < lsSolicitacao.size(); i++) {
 			if (lsSolicitacao.get(i).getBloco().contentEquals(linha[1])) {
@@ -166,14 +182,14 @@ public class App {
 
 	public static void verificaListaEspera() {
 		Solicitacao aux = new Solicitacao();
-		// percorre a as partiÁıes em busca de uma partiÁ„o livre/
+		// percorre a as parti√ß√µes em busca de uma parti√ß√£o livre/
 		for (int i = 0; i < lsSolicitacao.size(); i++) {
 			aux = lsSolicitacao.get(i);
 			for (int j = 0; j < lsSolicEspera.size(); j++) {
 				// se encontrar, verifica se algum elemento da lista de espera pode se encaixar
-				// nessa partiÁ„o
-				// se puder se encaixar e for menor que a partiÁ„o da lista principal, seta o
-				// objeto com o inicio e fim de alocaÁ„o corretos, e chama split para divir em
+				// nessa parti√ß√£o
+				// se puder se encaixar e for menor que a parti√ß√£o da lista principal, seta o
+				// objeto com o inicio e fim de aloca√ß√£o corretos, e chama split para divir em
 				// dois blocos
 				if (lsSolicitacao.get(i).isLiberado()
 						&& (lsSolicitacao.get(i).getTamanhoAlocado() > lsSolicEspera.get(j).getTamanhoAlocado())) {
@@ -185,7 +201,7 @@ public class App {
 					lsSolicEspera.remove(j);
 
 					break;
-					// se for do mesmo tamanho, adiciona na posiÁ„o e seta e inicio e final
+					// se for do mesmo tamanho, adiciona na posi√ß√£o e seta e inicio e final
 					// corretamente.
 				} else if (lsSolicitacao.get(i).isLiberado()
 						&& (lsSolicitacao.get(i).getTamanhoAlocado() == lsSolicEspera.get(j).getTamanhoAlocado())) {
@@ -206,7 +222,7 @@ public class App {
 	// junta dois blocos e empurra a linked list para a esquerda, i = i + 1;
 	public static void juntaBloco(int bloco) {
 
-		// verifica se bloco acima est· livre para juntar;
+		// verifica se bloco acima est√° livre para juntar;
 		try {
 			// junta os dois blocos, setando o inicio do anterior no proximo e a soma dos
 			// tamanhos alocados.
@@ -217,8 +233,9 @@ public class App {
 				// remove o bloco inutilizado
 				lsSolicitacao.remove(bloco - 1);
 				System.out.println(lsSolicitacao.get(bloco).toString() + "\n");
-				if (lsSolicitacao.get(bloco-1).isLiberado()) {
-					juntaBloco(bloco-1);
+				// verfica se o bloco anterior est√° livre.
+				if (lsSolicitacao.get(bloco - 1).isLiberado()) {
+					juntaBloco(bloco - 1);
 				}
 			} else {
 				if (lsSolicitacao.get(bloco + 1) != null && lsSolicitacao.get(bloco + 1).isLiberado()) {
@@ -228,48 +245,49 @@ public class App {
 					lsSolicitacao.get(bloco).setFinalAlocacao(lsSolicitacao.get(bloco + 1).getFinalAlocacao());
 					lsSolicitacao.remove(bloco + 1);
 					System.out.println(lsSolicitacao.get(bloco).toString() + "\n");
-					if (lsSolicitacao.get(bloco+1).isLiberado()) {
-						juntaBloco(bloco+1);
+					// verifica se o proximo bloco pode juntar
+					if (lsSolicitacao.get(bloco + 1).isLiberado()) {
+						juntaBloco(bloco + 1);
 					}
 				}
 
 			}
 
 		}
-		// trata o erro para que o programa continue rodando, quando o d· a exceÁ„o È
-		// porque o programa n„o necessita deste mÈtodo.
+		// trata o erro para que o programa continue rodando, quando o d√° a exce√ß√£o √©
+		// porque o programa n√£o necessita deste m√©todo.
 		catch (IndexOutOfBoundsException e) {
 
 		}
 
 	}
 
-	// divide um bloco em dois e empurra para a direita, i+1 = i; Por padr„o o bloco
-	// livre ficar· depois do bloco ocupado.
+	// divide um bloco em dois e empurra para a direita, i+1 = i; Por padr√£o o bloco
+	// livre ficar√° depois do bloco ocupado.
 	public static void splitBloco(int posicao, Solicitacao solic) {
-		// cria um bloco vazio com o resto do tamanho da alocaÁ„o;
+		// cria um bloco vazio com o resto do tamanho da aloca√ß√£o;
 		Solicitacao restoDoBloco = new Solicitacao();
 		restoDoBloco.setTamanhoAlocado(lsSolicitacao.get(posicao).getTamanhoAlocado() - solic.getTamanhoAlocado());
 		restoDoBloco.setInicioAlocacao(solic.getFinalAlocacao());
 		restoDoBloco.setFinalAlocacao(solic.getFinalAlocacao() + restoDoBloco.getTamanhoAlocado());
 		restoDoBloco.setBloco("livre");
 		restoDoBloco.setLiberado(true);
-		// coloca a solicitaÁ„o na posiÁ„o;
+		// coloca a solicita√ß√£o na posi√ß√£o;
 		lsSolicitacao.set(posicao, solic);
-		// adiciona a solicitaÁ„o no final do bloco
+		// adiciona a solicita√ß√£o no final do bloco
 		lsSolicitacao.add(restoDoBloco);
 		System.out.println(lsSolicitacao.get(posicao).toString() + "\n");
 		System.out.println(restoDoBloco.toString() + "\n");
-		// empurra a lista para a direita, no qual a posiÁ„o i + 1 = i;
+		// empurra a lista para a direita, no qual a posi√ß√£o i + 1 = i;
 		if ((posicao + 2) < (lsSolicitacao.size())) {
 			for (int i = lsSolicitacao.size() - 1; i >= posicao + 2; i--) {
 				lsSolicitacao.set(i, lsSolicitacao.get(i - 1));
 			}
-			// (posiÁ„o +1) ficar· igual, pois a iteraÁ„ sÛ comeÁa em (posiÁ„o +2), assim
-			// adicionamos esse bloco vazio na posiÁ„o que n„o foi modificada.
+			// (posi√ß√£o +1) ficar√° igual, pois a itera√ß√£ s√≥ come√ßa em (posi√ß√£o +2), assim
+			// adicionamos esse bloco vazio na posi√ß√£o que n√£o foi modificada.
 			lsSolicitacao.set(posicao + 1, restoDoBloco);
 		}
-		// seta o inicio da alocacao do proximo bloco para o final do ˙ltimo bloco da
+		// seta o inicio da alocacao do proximo bloco para o final do √∫ltimo bloco da
 		// lista;
 		inicioAlocacaoBloco = lsSolicitacao.get(lsSolicitacao.size() - 1).getFinalAlocacao();
 
